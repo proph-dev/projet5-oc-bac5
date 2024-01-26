@@ -34,22 +34,25 @@ public class UserControllerIntTest {
 
         @BeforeAll
         public void setup() throws Exception {
-        // Connexion en tant qu'administrateur pour obtenir un token
-        String adminLoginJson = "{\"email\": \"yoga@studio.com\", \"password\": \"test!1234\"}";
-        MvcResult adminLoginResult = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(adminLoginJson))
-                .andExpect(status().isOk())
-                .andReturn();
-        String adminToken = "Bearer " + JsonPath.read(adminLoginResult.getResponse().getContentAsString(), "$.token");
+                // Connexion en tant qu'administrateur pour obtenir un token
+                String adminLoginJson = "{\"email\": \"yoga@studio.com\", \"password\": \"test!1234\"}";
+                MvcResult adminLoginResult = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(adminLoginJson))
+                        .andExpect(status().isOk())
+                        .andReturn();
+                String adminToken = "Bearer " + JsonPath.read(adminLoginResult.getResponse().getContentAsString(), "$.token");
 
-        // Utiliser le token admin pour créer un utilisateur
-        String regularUserJson = "{\"email\":\"yoga@studio.com\", \"password\":\"test!1234\"}";
-        mockMvc.perform(post("/api/user")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(regularUserJson))
-                .andExpect(status().isOk());
+                // Utiliser le token admin pour créer un utilisateur
+                String regularUserJson = "{\"lastName\": \"tata\", \"firstName\": \"tutu\", \"email\":\"test@studio.com\", \"password\":\"test!1234\"}";
+                mockMvc.perform(post("/api/auth/register")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(regularUserJson))
+                        .andExpect(status().isOk());
+
+
+                this.token = adminToken;
         }
 
         @Test
@@ -58,7 +61,7 @@ public class UserControllerIntTest {
             mockMvc.perform(get("/api/user/1")
                     .header("Authorization", token))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("lastName", is("tata")))
+                    .andExpect(jsonPath("lastName", is("Admin")))
                     .andDo(print());
         }
 
@@ -90,7 +93,7 @@ public class UserControllerIntTest {
         @DisplayName("Test delete OK")
         public void testDeleteUserOK() throws Exception {
                 String requestBodyLoginUser = "{" +
-                                "    \"email\": \"tutu@gmail.com\"," +
+                                "    \"email\": \"toto@gmail.com\"," +
                                 "    \"password\": \"test!1234\"" +
                                 "}";
                 MvcResult resultLogin = mockMvc.perform(post("/api/auth/login")

@@ -1,0 +1,13 @@
+import {HttpClientModule} from '@angular/common/http';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {SessionService} from '../../services/session.service';
+import {UserService} from '../../services/user.service';
+import {MeComponent} from './me.component';
+import {jest} from "@jest/globals";
+import {expect} from "@jest/globals";
+import {RouterTestingModule} from "@angular/router/testing";

@@ -3,6 +3,9 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "globals": {
+    "cy": true
+  },
   "overrides": [
     {
       "files": [

@@ -26,15 +26,7 @@ public class AuthControllerIntTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeAll
-    public void setup() throws Exception {
-        // Créer un utilisateur régulier pour les tests
-        String regularUserJson = "{\"email\":\"yoga@studio.com\",\"password\":\"test!1234\"}";
-        mockMvc.perform(post("/api/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(regularUserJson))
-                .andExpect(status().isOk());
-    }
+    String uniqueEmail = "user" + System.currentTimeMillis() + "@example.com";
 
     @Test
     @DisplayName("La connexion à l'administration devrait réussir")
@@ -54,7 +46,6 @@ public class AuthControllerIntTest {
     @Test
     @DisplayName("L'enregistrement de l'utilisateur devrait être réussi")
     void userRegistrationSuccess() throws Exception {
-        String uniqueEmail = "user" + System.currentTimeMillis() + "@example.com";
         String newUserJson = String.format("{\"lastName\":\"tata\",\"firstName\":\"tutu\",\"email\":\"%s\",\"password\":\"test!1234\"}", uniqueEmail);
 
         MvcResult result = mockMvc.perform(post("/api/auth/register")
@@ -69,7 +60,7 @@ public class AuthControllerIntTest {
     @Test
     @DisplayName("La connexion d'un utilisateur normal devrait réussir")
     void regularUserLoginSuccess() throws Exception {
-        String userJson = "{\"email\":\"toto@gmail.com\",\"password\":\"test!1234\"}";
+        String userJson = String.format("{\"email\":\"%s\",\"password\":\"test!1234\"}", uniqueEmail);
         
         MvcResult result = mockMvc.perform(post("/api/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +74,7 @@ public class AuthControllerIntTest {
     @Test
     @DisplayName("La connexion avec un mot de passe incorrect doit échouer")
     void loginWithIncorrectPassword() throws Exception {
-        String incorrectPasswordJson = "{\"email\":\"toto@gmail.com\",\"password\":\"wrongpassword\"}";
+        String incorrectPasswordJson = "{\"email\":\"test2@gmail.com\",\"password\":\"wrongpassword\"}";
         
         mockMvc.perform(post("/api/auth/login")
                        .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +85,7 @@ public class AuthControllerIntTest {
     @Test
     @DisplayName("L'enregistrement avec un courriel existant doit échouer")
     void registrationWithExistingEmail() throws Exception {
-        String existingEmailJson = "{\"lastName\":\"toto\",\"firstName\":\"titi\",\"email\":\"toto@gmail.com\",\"password\":\"test!1234\"}";
+        String existingEmailJson = String.format("{\"lastName\":\"tata\",\"firstName\":\"tutu\",\"email\":\"%s\",\"password\":\"test!1234\"}", uniqueEmail);
         
         MvcResult result = mockMvc.perform(post("/api/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)

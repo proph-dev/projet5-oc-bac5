@@ -6,11 +6,13 @@ import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -20,6 +22,8 @@ import lombok.experimental.var;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 public class SessionControllerIntTest {
 
     @Autowired
@@ -47,13 +51,13 @@ public class SessionControllerIntTest {
     @Test
     @DisplayName("Créer une session et vérifier")
     public void createSessionAndVerify() throws Exception {
-        String sessionJson = "{\"name\": \"Kids Session\", \"date\": \"2012-01-01\", \"teacher_id\": 1, \"users\": null, \"description\": \"Session for kids\"}";
+        String sessionJson = "{\"name\": \"Session pour les nouveaux\", \"date\": \"2012-01-01\", \"teacher_id\": 1, \"users\": null, \"description\": \"Session for kids\"}";
         mockMvc.perform(post(SESSION_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", token)
                 .content(sessionJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Kids Session")));
+                .andExpect(jsonPath("$.name", is("Session pour les nouveaux")));
     }
 
     @Test
@@ -99,7 +103,7 @@ public class SessionControllerIntTest {
         mockMvc.perform(get(SESSION_ENDPOINT)
                 .header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is("Kids Session")));
+                .andExpect(jsonPath("$[0].name", is("Session pour les nouveaux")));
     }
 
     @Test
@@ -160,12 +164,25 @@ public class SessionControllerIntTest {
     }
 
     @Test
-    @DisplayName("Participer à la session - S'assurer que la session et l'utilisateur existent")
-    public void participateInSession() throws Exception {
-        mockMvc.perform(post(SESSION_ENDPOINT + "5/participate/" + userId)
+        @DisplayName("Participer à la session - S'assurer que la session et l'utilisateur existent")
+        public void participateInSession() throws Exception {
+        // Créer une nouvelle session et récupérer son ID
+        String sessionJson = "{\"name\": \"Nouvelle sessions\", \"date\": \"2023-01-01\", \"teacher_id\": 1, \"users\": null, \"description\": \"Nouvelle session pour test\"}";
+        MvcResult result = mockMvc.perform(post(SESSION_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", token)
+                .content(sessionJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseString = result.getResponse().getContentAsString();
+        int createdSessionId = JsonPath.parse(responseString).read("$.id", Integer.class);
+
+        // Participer à la session créée
+        mockMvc.perform(post(SESSION_ENDPOINT + createdSessionId + "/participate/" + userId)
                 .header("Authorization", token))
                 .andExpect(status().isOk());
-    }
+        }
 
     @Test
     @DisplayName("NNe participe plus à la session - S'assurer de l'existence de la session et de l'utilisateur")

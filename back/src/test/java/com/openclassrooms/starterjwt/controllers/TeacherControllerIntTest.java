@@ -33,7 +33,7 @@ public class TeacherControllerIntTest {
         @BeforeAll
         public void setup() throws Exception {
                 // Connexion pour obtenir un token valide
-                String requestBodyLoginUser = "{\"last_name\":\"DELAHAYE\", \"password\":\"test!1234\"}";
+                String requestBodyLoginUser = "{\"email\":\"toto@gmail.com\", \"password\":\"test!1234\"}";
                 MvcResult resultLogin = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBodyLoginUser))
