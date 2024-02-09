@@ -51,7 +51,7 @@ Vous pouvez désormais simplement aller sur la base de données, cliquez sur `Im
 - L'application est disponible à l'url http://localhost:4200/
 
 **Back :**
-- Dans votre terminal, depuis le répertoire back, accédez à ce fichier : `src/main/java/com/openclassrooms/starterjwt/SpringBootSecurityJwtApplication.java` puis cliquez sur "Run" présent avant la ligne 10
+- Depuis le répertoire back, accédez à ce fichier : `src/main/java/com/openclassrooms/starterjwt/SpringBootSecurityJwtApplication.java` puis cliquez sur "Run" présent avant la ligne 10
 - L'application est disponible à l'url http://localhost:8080/ (en tant qu'API)
 
 
